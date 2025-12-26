@@ -12,8 +12,13 @@ import (
 // It expects form values "text" and "banner" and returns the rendered result in HTML.
 func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if the request method is POST. If not, return a 400 Bad Request.
+	templerr, _ := template.ParseFiles("error.html")
 	if r.Method != http.MethodPost {
-		http.Error(w, "Bad Request: 400", http.StatusBadRequest)
+		data := map[string]string{
+			"ErrorMessage": "BAD REQUEST",
+		}
+		w.WriteHeader(400)
+		templerr.Execute(w, data)
 		return
 	}
 
@@ -21,7 +26,11 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	text := r.FormValue("text")
 
 	if len(text) > 2000 {
-		http.Error(w, "Max size 2000 charachter: 422", 422)
+		data := map[string]string{
+			"ErrorMessage": "Max size 2000 charachter: 422",
+		}
+		w.WriteHeader(422)
+		templerr.Execute(w, data)
 		return
 	}
 	// The input text to convert to ASCII art
@@ -29,7 +38,11 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate that both fields are provided
 	if text == "" || banner == "" {
-		http.Error(w, "Bad Request: 400", http.StatusBadRequest)
+		data := map[string]string{
+			"ErrorMessage": "BAD REQUEST",
+		}
+		w.WriteHeader(400)
+		templerr.Execute(w, data)
 		return
 	}
 
@@ -37,7 +50,11 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	bannerData, err := os.ReadFile("banners/" + banner + ".txt")
 	if err != nil {
 		// If the file doesn't exist or can't be read, return 404 Not Found
-		http.Error(w, "Banner not found: 404", http.StatusNotFound)
+		data := map[string]string{
+			"ErrorMessage": "BANNER NOT FOUND",
+		}
+		w.WriteHeader(404)
+		templerr.Execute(w, data)
 		return
 	}
 
@@ -45,7 +62,7 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	font := ascii_art.Sep_Fonts(string(bannerData))
 	// Generate ASCII art from the input text using the chosen font
 	result := ascii_art.Chars_To_Art(font, text)
-	if !IsSupportedText(result){
+	if !IsSupportedText(result) {
 		http.Error(w, "not validition text: 422", 422)
 		return
 
@@ -69,13 +86,13 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error: 500", http.StatusInternalServerError)
 		return
 	}
-	
 }
-func IsSupportedText(text string) bool{
-		for _, v := range text{
-			if v >= 32 && v <= 126{
-				return true
-			}
+
+func IsSupportedText(text string) bool {
+	for _, v := range text {
+		if v >= 32 && v <= 126 {
+			return true
 		}
-		return false
 	}
+	return false
+}
