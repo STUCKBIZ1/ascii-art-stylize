@@ -8,27 +8,14 @@ import (
 // HomeHandler handles the GET request to render the home page.
 // It simply serves the index.html template with an empty Result field.
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	templerr, errr := template.ParseFiles("templates/error.html")
-	if errr != nil {
-		http.Error(w, "Template not found: 404", 404)
-		return
-	}
 	if r.URL.Path != "/" {
-		data := map[string]string{
-			"ErrorMessage": "THAT PAGE NOT FOUND",
-		}
-		w.WriteHeader(404)
-		templerr.Execute(w, data)
+		errorstylehandler(w, "THAT PAGE NOT FOUND: 404", 404)
 		return
 	}
 	// Ensure the request method is GET
 	if r.Method != http.MethodGet {
 		// If not GET, return 400 Bad Request
-		data := map[string]string{
-			"ErrorMessage": "BAD REQUEST",
-		}
-		w.WriteHeader(400)
-		templerr.Execute(w, data)
+		errorstylehandler(w, "BAD REQUEST: 400", 400)
 		return
 	}
 
@@ -36,11 +23,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("templates/index.html")
 	if err != nil {
 		// If template is missing, return 404 Not Found
-		data := map[string]string{
-			"ErrorMessage": "TEMPLATE NOT FOUND",
-		}
-		w.WriteHeader(404)
-		templerr.Execute(w, data)
+		errorstylehandler(w, "TEMPLATE NOT FOUND: 404", 404)
 		return
 	}
 
@@ -53,11 +36,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	// Good practice: handle possible execution error
 	if err := tmpl.Execute(w, data); err != nil {
 		// If template execution fails, return 500 Internal Server Error
-		data := map[string]string{
-			"ErrorMessage": "Internal Server Error",
-		}
-		w.WriteHeader(500)
-		templerr.Execute(w, data)
+		errorstylehandler(w, "INTERNAL SERVER ERROR: 500", 500)
 		return
 	}
 }

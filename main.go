@@ -12,7 +12,7 @@ func main() {
 	http.HandleFunc("/", ascii.HomeHandler)
 
 	// Register the handler for ASCII art generation (POST /ascii-art)
-	http.HandleFunc("/ascii-art", ascii.AsciiArtHandler)
+	http.HandleFunc("POST /ascii-art", ascii.AsciiArtHandler)
 
 	// Print server URL to the console
 	fmt.Println("Server running at http://localhost:8080")
