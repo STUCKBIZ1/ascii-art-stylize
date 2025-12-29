@@ -13,14 +13,14 @@ import (
 func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if the request method is POST. If not, return a 400 Bad Request.
 	if r.Method != http.MethodPost {
-		errorstylehandler(w, "BAD REQUEST: 400", 400)
+		ErrorStyleHandler(w, "BAD REQUEST: 400", 400)
 	}
 
 	// Get form values from the request
 	text := r.FormValue("text")
 
 	if len(text) > 2000 {
-		errorstylehandler(w, "MAX SIZE 2000 CHARACHTER: 422", 422)
+		ErrorStyleHandler(w, "MAX SIZE 2000 CHARACHTER: 422", 422)
 		return
 	}
 	// The input text to convert to ASCII art
@@ -28,7 +28,7 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate that both fields are provided
 	if text == "" || banner == "" {
-		errorstylehandler(w, "BAD REQUEST: 400", 400)
+		ErrorStyleHandler(w, "BAD REQUEST: 400", 400)
 		return
 	}
 
@@ -36,7 +36,7 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	bannerData, err := os.ReadFile("banners/" + banner + ".txt")
 	if err != nil {
 		// If the file doesn't exist or can't be read, return 404 Not Found
-		errorstylehandler(w, "BANNER NOT FOUND: 404", 404)
+		ErrorStyleHandler(w, "BANNER NOT FOUND: 404", 404)
 		return
 	}
 	// Convert the banner file content to a font usable by the ascii_art package
@@ -51,7 +51,7 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("templates/index.html")
 	if err != nil {
 		// If template is missing, return 404 Not Found
-		errorstylehandler(w, "TEMPLATE NOT FOUND: 404", 404)
+		ErrorStyleHandler(w, "TEMPLATE NOT FOUND: 404", 404)
 		return
 	}
 	// Prepare data to pass to the template
@@ -62,7 +62,7 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	// Execute the template and write the result to the ResponseWriter
 	if err := tmpl.Execute(w, data); err != nil {
 		// If template execution fails, return 500 Internal Server Error
-		errorstylehandler(w, "INTERNAL SERVER ERROR: 500", 500)
+		ErrorStyleHandler(w, "INTERNAL SERVER ERROR: 500", 500)
 		return
 	}
 }

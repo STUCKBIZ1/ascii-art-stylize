@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func errorstylehandler(w http.ResponseWriter, errorstring string, codestatut int) {
+func ErrorStyleHandler(w http.ResponseWriter, errorstring string, codestatut int) {
 	tmpl, _ := template.ParseFiles("templates/error.html")
 	data := map[string]string{
 		"ErrorMessage": errorstring,
